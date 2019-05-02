@@ -1,0 +1,106 @@
+# DEDUPE
+# bspSchiffe.csv (11)
+importing data ...
+starting active labeling...
+MESSZEIT : 2019-02-22 06:00
+KENNUNG : aubc
+LAT : 20.7
+LON : 71.4
+
+MESSZEIT : 2019-02-22 06:00
+KENNUNG : aubc
+LAT : 20.7
+LON : 71.45
+
+0/10 positive, 0/10 negative
+Do these records refer to the same thing?
+(y)es / (n)o / (u)nsure / (f)inished
+y
+
+...
+
+11/10 positive, 10/10 negative
+Do these records refer to the same thing?
+(y)es / (n)o / (u)nsure / (f)inished / (p)revious
+f
+
+Finished labeling
+
+INFO:rlr.crossvalidation:using cross validation to find optimum alpha...
+INFO:rlr.crossvalidation:optimum alpha: 0.000010, score 1.0
+INFO:dedupe.training:Final predicate set:
+INFO:dedupe.training:SimplePredicate: (wholeFieldPredicate, MESSZEIT)
+INFO:dedupe.api:Maximum expected recall and precision
+INFO:dedupe.api:recall: 1.000
+INFO:dedupe.api:precision: 1.000
+INFO:dedupe.api:With threshold: 1.000
+
+threshold: 0.9999706745147705
+
+clustering...
+# duplicate sets 3
+
+# -------------------------------------
+# DEDUPE
+# schiffe_DE_last30d.csv (72859)
+importing data ...
+reading from /Users/marty/PycharmProjects/DupDetect/dedupe/dedupe_dataframe_learned_settings
+INFO:dedupe.api:((SimplePredicate: (sameSevenCharStartPredicate, KENNUNG), SimplePredicate: (wholeFieldPredicate, MESSZEIT)),)
+INFO:dedupe.blocking:10000, 0.0526332 seconds
+INFO:dedupe.blocking:20000, 0.1058792 seconds
+INFO:dedupe.blocking:30000, 0.1734182 seconds
+INFO:dedupe.blocking:40000, 0.2307082 seconds
+INFO:dedupe.blocking:50000, 0.2892202 seconds
+INFO:dedupe.blocking:60000, 0.3452612 seconds
+INFO:dedupe.blocking:70000, 0.4022382 seconds
+INFO:dedupe.api:Maximum expected recall and precision
+INFO:dedupe.api:recall: 1.000
+INFO:dedupe.api:precision: 0.997
+INFO:dedupe.api:With threshold: 0.983
+threshold: 0.9831598997116089
+clustering...
+INFO:dedupe.blocking:10000, 0.0565752 seconds
+INFO:dedupe.blocking:20000, 0.1109292 seconds
+INFO:dedupe.blocking:30000, 0.1770382 seconds
+INFO:dedupe.blocking:40000, 0.2341232 seconds
+INFO:dedupe.blocking:50000, 0.2911032 seconds
+INFO:dedupe.blocking:60000, 0.3481092 seconds
+INFO:dedupe.blocking:70000, 0.4059212 seconds
+# duplicate sets 31739
+ran in 9.44663691520691 seconds
+
+# =====================================
+# PANDAS-DEDUPE
+# schiffe_DE_last30d.csv (72859)
+importing data ...
+reading from dedupe_dataframe_learned_settings
+clustering...
+# duplicate sets 31738
+ran in 17.436954975128174 seconds
+
+# =====================================
+# recordlinkage
+# Blocking
+# schiffe_DE_last30d.csv (72859)
+indexing ...
+... done.
+comparing ...
+... done.
+Anzahl Matches: 3848833
+Anzahl Non-Matches: 55627935
+ran in 613.6417768001556 seconds
+# -------------------------------------
+# recordlinkage
+# Sorted Neigborhood, window=5
+# schiffe_DE_last30d.csv (72859)
+Anzahl Matches: 34752
+Anzahl Non-Matches: 231951
+ran in 7.1218791007995605 seconds
+# -------------------------------------
+# recordlinkage
+# Sorted Neigborhood, window=3
+# schiffe_DE_last30d.csv (72859)
+Anzahl Matches: 34752
+Anzahl Non-Matches: 116164
+ran in 4.12480902671814 seconds
+
