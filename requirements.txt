@@ -1,0 +1,6 @@
+numpy>=1.9
+pandas
+recordlinkage
+dedupe
+unidecode
+pandas-dedupe
