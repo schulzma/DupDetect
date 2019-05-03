@@ -104,3 +104,101 @@ Anzahl Matches: 34752
 Anzahl Non-Matches: 116164
 ran in 4.12480902671814 seconds
 
+# =====================================
+# csvdedupe
+# Aufruf: csvdedupe ../data/schiffe_DE_last30d.csv --config=config.json
+# recall_weight of 0.5
+training ...
+12/10 positive, 23/10 negative
+Do these records refer to the same thing?
+(y)es / (n)o / (u)nsure / (f)inished / (p)revious
+f
+Finished labeling
+INFO:root:saving training data to training.json
+INFO:rlr.crossvalidation:using cross validation to find optimum alpha...
+INFO:rlr.crossvalidation:optimum alpha: 0.010000, score 0.927230380573343
+INFO:dedupe.training:Final predicate set:
+INFO:dedupe.training:(SimplePredicate: (alphaNumericPredicate, KENNUNG), SimplePredicate: (fingerprint, MESSZEIT))
+INFO:root:caching training result set to file learned_settings
+INFO:root:blocking...
+INFO:root:finding a good threshold with a recall_weight of 0.5
+INFO:dedupe.blocking:10000, 0.0643632 seconds
+INFO:dedupe.blocking:20000, 0.1347142 seconds
+INFO:dedupe.blocking:30000, 0.7195222 seconds
+INFO:dedupe.blocking:40000, 0.8002772 seconds
+INFO:dedupe.blocking:50000, 0.8784352 seconds
+INFO:dedupe.blocking:60000, 0.9575902 seconds
+INFO:dedupe.api:Maximum expected recall and precision
+INFO:dedupe.api:recall: 1.000
+INFO:dedupe.api:precision: 0.944
+INFO:dedupe.api:With threshold: 0.903
+INFO:root:clustering...
+INFO:dedupe.blocking:10000, 0.0746972 seconds
+INFO:dedupe.blocking:20000, 0.1527902 seconds
+INFO:dedupe.blocking:30000, 0.2310422 seconds
+INFO:dedupe.blocking:40000, 0.3082722 seconds
+INFO:dedupe.blocking:50000, 0.3850892 seconds
+INFO:dedupe.blocking:60000, 0.4653412 seconds
+INFO:root:# duplicate sets 20827
+# -------------------------------------
+# recall_weight of 0.2
+weiterführendes training ...
+19/10 positive, 29/10 negative
+Do these records refer to the same thing?
+(y)es / (n)o / (u)nsure / (f)inished / (p)revious
+f
+Finished labeling
+INFO:root:saving training data to training.json
+INFO:rlr.crossvalidation:using cross validation to find optimum alpha...
+INFO:rlr.crossvalidation:optimum alpha: 0.000010, score 1.0
+INFO:dedupe.training:Final predicate set:
+INFO:dedupe.training:(SimplePredicate: (alphaNumericPredicate, KENNUNG), SimplePredicate: (wholeFieldPredicate, MESSZEIT))
+INFO:root:caching training result set to file learned_settings
+INFO:root:blocking...
+INFO:root:finding a good threshold with a recall_weight of 0.2
+INFO:dedupe.blocking:10000, 0.0582762 seconds
+INFO:dedupe.blocking:20000, 0.6427802 seconds
+INFO:dedupe.blocking:30000, 0.7128722 seconds
+INFO:dedupe.blocking:40000, 0.7842912 seconds
+INFO:dedupe.blocking:50000, 0.8538372 seconds
+INFO:dedupe.blocking:60000, 0.9249802 seconds
+INFO:dedupe.api:Maximum expected recall and precision
+INFO:dedupe.api:recall: 1.000
+INFO:dedupe.api:precision: 1.000
+INFO:dedupe.api:With threshold: 0.999
+INFO:root:clustering...
+INFO:dedupe.blocking:10000, 0.0693982 seconds
+INFO:dedupe.blocking:20000, 0.1430912 seconds
+INFO:dedupe.blocking:30000, 0.2151002 seconds
+INFO:dedupe.blocking:40000, 0.2881432 seconds
+INFO:dedupe.blocking:50000, 0.3597112 seconds
+INFO:dedupe.blocking:60000, 0.4317482 seconds
+INFO:root:# duplicate sets 20827
+# -------------------------------------
+# recall_weight of 2
+INFO:root:saving training data to training.json
+INFO:rlr.crossvalidation:using cross validation to find optimum alpha...
+INFO:rlr.crossvalidation:optimum alpha: 0.000010, score 0.9696374575951295
+INFO:dedupe.training:Final predicate set:
+INFO:dedupe.training:(SimplePredicate: (alphaNumericPredicate, KENNUNG), SimplePredicate: (wholeFieldPredicate, MESSZEIT))
+INFO:root:caching training result set to file learned_settings
+INFO:root:blocking...
+INFO:root:finding a good threshold with a recall_weight of 2
+INFO:dedupe.blocking:10000, 0.0579912 seconds
+INFO:dedupe.blocking:20000, 0.1206002 seconds
+INFO:dedupe.blocking:30000, 0.6701372 seconds
+INFO:dedupe.blocking:40000, 0.7433282 seconds
+INFO:dedupe.blocking:50000, 0.8160972 seconds
+INFO:dedupe.blocking:60000, 0.8890482 seconds
+INFO:dedupe.api:Maximum expected recall and precision
+INFO:dedupe.api:recall: 1.000
+INFO:dedupe.api:precision: 1.000
+INFO:dedupe.api:With threshold: 0.999
+INFO:root:clustering...
+INFO:dedupe.blocking:10000, 0.0688742 seconds
+INFO:dedupe.blocking:20000, 0.1418762 seconds
+INFO:dedupe.blocking:30000, 0.2151942 seconds
+INFO:dedupe.blocking:40000, 0.2862892 seconds
+INFO:dedupe.blocking:50000, 0.3569782 seconds
+INFO:dedupe.blocking:60000, 0.4295802 seconds
+INFO:root:# duplicate sets 20827

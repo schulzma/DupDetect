@@ -4,3 +4,4 @@ recordlinkage
 dedupe
 unidecode
 pandas-dedupe
+csvdedupe
