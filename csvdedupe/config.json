@@ -24,8 +24,8 @@
     }
   ],
   "output_file": "output.csv",
-  "skip_training": false,
+  "skip_training": true,
   "training_file": "training.json",
-  "sample_size": 15000,
-  "recall_weight": 2
+  "sample_size": 150000,
+  "recall_weight": 1
 }

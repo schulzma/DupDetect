@@ -104,6 +104,7 @@ data_dir = os.path.normpath(f'{working_dir}/../data')
 
 file_ext = '.csv'
 input_file = 'schiffe_DE_last30d'
+# input_file = 'schiffe_DE_70000'
 # input_file = 'bspSchiffe'
 output_file = f'{input_file}_dedupe_out{file_ext}'
 

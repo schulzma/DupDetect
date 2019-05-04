@@ -17,12 +17,12 @@ import pandas as pd
 
 start_time = time.time()
 
-# working_dir = '/Users/marty/Google Drive/BA/SoftwareTests/recordlinkage'
 working_dir = os.path.abspath(os.path.dirname(__file__))
 data_dir = os.path.normpath(f'{working_dir}/../data')
 file_ext = '.csv'
-# input_file = 'bspSchiffe'
 input_file = 'schiffe_DE_last30d'
+# input_file = 'schiffe_DE_70000'
+# input_file = 'bspSchiffe'
 output_file = f'{input_file}_recordlinkage_SN_out'
 
 df = pd.read_csv(os.path.join(data_dir, input_file + file_ext),
