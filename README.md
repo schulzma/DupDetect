@@ -38,7 +38,7 @@ Git-Klon:
 git clone https://github.com/schulzma/DupDetect.git
 ```
 
-Requiremets:
+Requirements:
 ```
 cd DupDetect
 pip install --upgrade -r requirements.txt
