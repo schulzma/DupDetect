@@ -18,11 +18,19 @@ Die folgenden Anweisungen beschreiben die lokale Installation dieser Software.
 
 ### Voraussetzungen
 
-Python3, virtualenv (*optional*)
+Python3
 
-Installation virtualenv:
+### Installation
+
+Isolierte Python-Umgebung einrichten:
 ```
-pip install virtualenv
+python3 -m venv dupdetect-env
+
+Windows:
+  dupdetect-env\Scripts\activate.bat
+
+Unix oder MacOS:
+  source dupdetect-env/bin/activate
 ```
 
 Git-Klon:
@@ -30,23 +38,11 @@ Git-Klon:
 git clone https://github.com/schulzma/DupDetect.git
 ```
 
-### Installation
-
-Isolierte Python-Umgebung einrichten (*optional*):
-```
-virtualenv ENVdupDetect
-linux:
-  . ENVdupDetect/bin/activate
-windows:
-  ENVdupDetect\Scripts\activate
-```
-
 Requiremets:
 ```
-cd ENVdupDetect
+cd DupDetect
 pip install --upgrade -r requirements.txt
 ```
-
 
 ## Eingesetzte Bibliotheken
 
