@@ -44,6 +44,26 @@ cd DupDetect
 pip install --upgrade -r requirements.txt
 ```
 
+### Beispiele ausführen
+
+dedupe:
+```
+cd dedupe
+python csv_example_dedupe.py
+```
+
+pandas_dedupe:
+```
+cd ../pandasdedupe/
+python csv_example_pandas_dedupe.py
+```
+
+recordlinkage:
+```
+cd ../recordlinkage/
+python csv_example_recordlinkage_SN.py
+```
+
 ## Eingesetzte Bibliotheken
 
 ### dedupe python library 
