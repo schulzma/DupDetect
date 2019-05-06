@@ -5,3 +5,5 @@ dedupe
 unidecode
 pandas-dedupe
 csvdedupe
+docopt
+psutil

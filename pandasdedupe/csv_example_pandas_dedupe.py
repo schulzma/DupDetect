@@ -8,40 +8,80 @@ Created on Sat Apr 27 13:30:46 2019
 Beispiel zur Duplikaterkennung
 Datenquelle: csv - Datei
 Bibliothek: pandas_dedupe
-"""
 
+Usage:
+    csv_example_pandas_dedupe.py <filename>
+
+Arguments:
+    <filename>  Name der Eingabedatei
+
+Options:
+    -h --help   Zeigt diese Hilfe.
+
+"""
 import os
+from pathlib import Path
 import time
+from functools import wraps
+from docopt import docopt
 
 import pandas as pd
 import pandas_dedupe
 
-start_time = time.time()
 
-working_dir = os.path.abspath(os.path.dirname(__file__))
-print(f'Working-Dir: {working_dir}')
-data_dir = os.path.normpath(f'{working_dir}/../data')
-print(f'Data-Dir: {data_dir}')
+def fn_timer(function):
+    @wraps(function)
+    def function_timer(*args, **kwargs):
+        start_time = time.time()
+        result = function(*args, **kwargs)
+        print(f"Total time running {function.__name__}: {time.time() - start_time} seconds")
+        return result
 
-working_dir = os.path.abspath(os.path.dirname(__file__))
-data_dir = os.path.normpath(f'{working_dir}/../data')
+    return function_timer
 
-file_ext = '.csv'
-input_file = 'schiffe_DE_last30d'
-# input_file = 'schiffe_DE_70000'
-# input_file = 'bspSchiffe'
-output_file = f'{input_file}_pandas_dedupe_out'
 
-settings_file = os.path.join(working_dir, 'dedupe_dataframe_learned_settings')
-training_file = os.path.join(working_dir, 'dedupe_dataframe_training.json')
+def read_file(f):
+    """
+    Eingabedatei in ein Pandas-DataFrame einlesen
+    :param f: Eingabedatei
+    :return: DataFrame
+    """
+    try:
+        # load dataframe
+        df = pd.read_csv(f, index_col='MAROB_ID')
+        return df
+    except FileNotFoundError:
+        print(f"{f} nicht gefunden!")
 
-# load dataframe
-df = pd.read_csv(os.path.join(data_dir, input_file + file_ext), index_col='MAROB_ID')
 
-# initiate deduplication
-# df_final = pandas_dedupe.dedupe_dataframe(df, ['MESSZEIT', ('KENNUNG', 'Text'), 'LAT', 'LON'], canonicalize=True)
-df_final = pandas_dedupe.dedupe_dataframe(df, ['MESSZEIT', ('KENNUNG', 'Text'), 'GEOGR_BREITE', 'GEOGR_LAENGE'])
+@fn_timer
+def start_p_dedupe(df):
+    """
+    Doppelte Daten im Dataframe erkennen und Gesamt-Score pro Datensatz berechnen
+    :param df: DataFrame mit Eingangsdaten
+    :return: DataFrame mit dem Ergebnis
+    """
+    # initiate deduplication
+    # df_final = pandas_dedupe.dedupe_dataframe(df, ['MESSZEIT', ('KENNUNG', 'Text'), 'LAT', 'LON'], canonicalize=True)
+    df_final = pandas_dedupe.dedupe_dataframe(df, ['MESSZEIT', ('KENNUNG', 'Text'), 'GEOGR_BREITE', 'GEOGR_LAENGE'])
+    return df_final
 
-# send output to csv
-df_final.to_csv(output_file + file_ext)
-print(f'ran in {time.time() - start_time} seconds')
+
+def write_data(d):
+    # send output to csv
+    d.to_csv(output_file)
+
+
+if __name__ == '__main__':
+    # args
+    args = docopt(__doc__)
+    input_file = args["<filename>"]
+
+    output_file = f'pandas_dedupe_out_{Path(input_file).name}'
+
+    working_dir = os.path.abspath(os.path.dirname(__file__))
+    settings_file = os.path.join(working_dir, 'dedupe_dataframe_learned_settings')
+    training_file = os.path.join(working_dir, 'dedupe_dataframe_training.json')
+
+    dat = start_p_dedupe(read_file(input_file))
+    write_data(dat)

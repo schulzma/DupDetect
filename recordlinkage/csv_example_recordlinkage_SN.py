@@ -8,54 +8,105 @@ Created on Tue Apr 23 11:58:50 2019
 Beispiel zur Duplikaterkennung
 Datenquelle: csv - Datei
 Bibliothek: recordlinkage
+
+Usage:
+    csv_example_recordlinkage_SN.py <filename>
+
+Arguments:
+    <filename>  Name der Eingabedatei
+
+Options:
+    -h --help   Zeigt diese Hilfe.
+
 """
-import os
 import time
+from functools import wraps
+from pathlib import Path
+from docopt import docopt
 
 import recordlinkage as rl
 import pandas as pd
 
-start_time = time.time()
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
-working_dir = os.path.abspath(os.path.dirname(__file__))
-data_dir = os.path.normpath(f'{working_dir}/../data')
-file_ext = '.csv'
-input_file = 'schiffe_DE_last30d'
-# input_file = 'schiffe_DE_70000'
-# input_file = 'bspSchiffe'
-output_file = f'{input_file}_recordlinkage_SN_out'
 
-df = pd.read_csv(os.path.join(data_dir, input_file + file_ext),
-                 index_col='MAROB_ID')
-# Indexation step
-indexer = rl.index.SortedNeighbourhood(
-    'MESSZEIT', window=3, block_on=['KENNUNG']
-)
-pairs = indexer.index(df)
-# Comparison step
-comparer = rl.Compare()
-comparer.exact('MESSZEIT', 'MESSZEIT', label='messzeit')
-comparer.string('KENNUNG', 'KENNUNG', method='jarowinkler', threshold=0.85, label='kennung')
-comparer.numeric('GEOGR_BREITE', 'GEOGR_BREITE', method=u'lin', offset=0.0, origin=0.0, scale=1.0, label='geogr_breite')
-comparer.numeric('GEOGR_LAENGE', 'GEOGR_LAENGE', method=u'lin', offset=0.0, origin=0.0, scale=1.0, label='geogr_laenge')
+def fn_timer(function):
+    @wraps(function)
+    def function_timer(*args, **kwargs):
+        start_time = time.time()
+        result = function(*args, **kwargs)
+        print(f"Total time running {function.__name__}: {time.time() - start_time} seconds")
+        return result
 
-compared = comparer.compute(pairs, df)
+    return function_timer
 
-# prozentualer Gesamtscore pro Datensatz
-pcmax = compared.shape[1]  # col_count, 100%
 
-compared.loc[:, 'Score'] = 1 - (abs(compared.sum(axis=1) - pcmax) / pcmax)
+def read_file(f):
+    """
+    Eingabedatei in ein Pandas-DataFrame einlesen
+    :param f: Eingabedatei
+    :return: DataFrame
+    """
+    try:
+        df = pd.read_csv(f, index_col='MAROB_ID')
+        return df
+    except FileNotFoundError:
+        print(f"{f} nicht gefunden!")
 
-# Classification step
-matches = compared[(compared.messzeit == 1) | (compared.Score > .98)]
-# matches = compared[compared.Score > .98]
-print(f'Anzahl Matches: {len(matches)}')
 
-non_matches = compared[(compared.messzeit == 0) | (compared.Score < .98)]
-print(f'Anzahl Non-Matches: {len(non_matches)}')
+@fn_timer
+def start_rl(df):
+    """
+    Doppelte Daten im Dataframe erkennen und Gesamt-Score pro Datensatz berechnen
+    :param df: DataFrame mit Eingangsdaten
+    :return: zwei DataFrames mit dem Ergebnis aller durchgefuehrten Vergleiche und den Treffern mit einem Score >= .99
+    """
 
-# send output to csv
-compared.to_csv(os.path.join(working_dir, output_file + file_ext))
-matches.to_csv(os.path.join(working_dir, f'{output_file}_matches' + file_ext))
-non_matches.to_csv(os.path.join(working_dir, f'{output_file}_non_matches' + file_ext))
-print(f'ran in {time.time() - start_time} seconds')
+    # Indexation step
+    indexer = rl.index.SortedNeighbourhood(
+        'MESSZEIT', window=3, block_on=['KENNUNG']
+    )
+    pairs = indexer.index(df)
+
+    # Comparison step
+    comparer = rl.Compare()
+    comparer.exact('MESSZEIT', 'MESSZEIT', label='messzeit')
+    comparer.string('KENNUNG', 'KENNUNG', method='jarowinkler', threshold=0.85, label='kennung')
+    comparer.numeric('GEOGR_BREITE', 'GEOGR_BREITE', method=u'lin', offset=0.0, origin=0.0, scale=1.0,
+                     label='geogr_breite')
+    comparer.numeric('GEOGR_LAENGE', 'GEOGR_LAENGE', method=u'lin', offset=0.0, origin=0.0, scale=1.0,
+                     label='geogr_laenge')
+
+    compared = comparer.compute(pairs, df)
+
+    # prozentualer Gesamtscore pro Datensatz
+    pcmax = compared.shape[1]  # col_count, 100%
+    compared.loc[:, 'Score'] = 1 - (abs(compared.sum(axis=1) - pcmax) / pcmax)
+
+    # Classification step
+    matches = compared[(compared.messzeit == 1) & (compared.kennung == 1) & (compared.Score >= .99)]
+
+    return compared, matches
+
+
+def write_data(c, m):
+    # send output to csv
+    c.to_csv(output_file)
+    m.to_csv(f'{output_file}_matches')
+
+
+if __name__ == '__main__':
+    # args
+    args = docopt(__doc__)
+    input_file = args["<filename>"]
+
+    # start_time = time.time()
+
+    output_file = f'recordlinkage_SN_out_{Path(input_file).name}'
+    cmp, match = start_rl(read_file(input_file))
+    print(f'Anzahl Matches: {len(match)}')
+
+    write_data(cmp, match)
+
+    # print(f'ran in {time.time() - start_time} seconds')

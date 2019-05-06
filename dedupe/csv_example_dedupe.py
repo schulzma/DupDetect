@@ -10,6 +10,16 @@ https://github.com/dedupeio/dedupe-examples.git
 Beispiel zur Duplikaterkennung
 Datenquelle: csv - Datei
 Bibliothek: dedupe
+
+Usage:
+    csv_example_dedupe.py <filename>
+
+Arguments:
+    <filename>  Name der Eingabedatei
+
+Options:
+    -h --help   Zeigt diese Hilfe.
+
 """
 import os
 import csv
@@ -17,9 +27,20 @@ import re
 import time
 import dedupe
 from unidecode import unidecode
+from pathlib import Path
+from functools import wraps
+from docopt import docopt
 
 
-start_time = time.time()
+def fn_timer(function):
+    @wraps(function)
+    def function_timer(*args, **kwargs):
+        start_time = time.time()
+        result = function(*args, **kwargs)
+        print(f"Total time running {function.__name__}: {time.time() - start_time} seconds")
+        return result
+
+    return function_timer
 
 
 def sim_num_perc(field_1, field_2, pcmax=98):
@@ -87,7 +108,7 @@ def read_data(filename):
     Read in our data from a CSV file and create a dictionary of records, 
     where the key is a unique record ID and each value is dict
     """
-
+    print('importing data ...')
     data_d = {}
     with open(filename) as f:
         reader = csv.DictReader(f)
@@ -96,132 +117,136 @@ def read_data(filename):
             row_id = int(row['MAROB_ID'])
             data_d[row_id] = dict(clean_row)
     #            data_d[row_id]['LAT_LON']=(float(data_d[row_id]['LAT']),float(data_d[row_id]['LON']))
+
     return data_d
 
 
-working_dir = os.path.abspath(os.path.dirname(__file__))
-data_dir = os.path.normpath(f'{working_dir}/../data')
+@fn_timer
+def start_dedupe(df):
+    # If a settings file already exists, we'll just load that and skip training
+    if os.path.exists(settings_file):
+        print('reading from', settings_file)
+        with open(settings_file, 'rb') as f:
+            deduper = dedupe.StaticDedupe(f)
 
-file_ext = '.csv'
-input_file = 'schiffe_DE_last30d'
-# input_file = 'schiffe_DE_70000'
-# input_file = 'bspSchiffe'
-output_file = f'{input_file}_dedupe_out{file_ext}'
+    else:
+        # ## Training
 
-settings_file = os.path.join(working_dir, 'dedupe_dataframe_learned_settings')
-training_file = os.path.join(working_dir, 'dedupe_dataframe_training.json')
+        # Define the fields dedupe will pay attention to
+        fields = [
+            {'field': 'MESSZEIT', 'type': 'Exact'},
+            # {'field': 'MESSZEIT_UNIX_TS', 'type': 'Custom', 'comparator': num_abs_ident },
+            #        {'field' : 'MESSZEIT', 'type': 'String'},
+            #        {'field' : 'MESSZEIT','type': 'DateTime',
+            #         'fuzzy': False, 'dayfirst': False, 'yearfirst': True},
+            {'field': 'KENNUNG', 'type': 'String'},
+            {'field': 'GEOGR_BREITE', 'type': 'Custom', 'comparator': sim_num_abs},
+            {'field': 'GEOGR_LAENGE', 'type': 'Custom', 'comparator': sim_num_abs},
+            # {'field': 'LAT', 'type': 'Custom', 'comparator': sim_num_abs},
+            # {'field': 'LON', 'type': 'Custom', 'comparator': sim_num_abs},
+            # {'field' : 'LAT_LON', 'type': 'LatLong'},
+        ]
 
-print('importing data ...')
-data_d = read_data(os.path.join(data_dir, input_file + file_ext))
+        # Create a new deduper object and pass our data model to it.
+        deduper = dedupe.Dedupe(fields)
 
-# If a settings file already exists, we'll just load that and skip training
-if os.path.exists(settings_file):
-    print('reading from', settings_file)
-    with open(settings_file, 'rb') as f:
-        deduper = dedupe.StaticDedupe(f)
+        # To train dedupe, we feed it a sample of records.
+        deduper.sample(df, 15000, .8)
 
-else:
-    # ## Training
+        # If we have training data saved from a previous run of dedupe,
+        # look for it and load it in.
+        # __Note:__ if you want to train from scratch, delete the training_file
+        if os.path.exists(training_file):
+            print('reading labeled examples from ', training_file)
+            with open(training_file, 'rb') as f:
+                deduper.readTraining(f)
 
-    # Define the fields dedupe will pay attention to
-    fields = [
-        {'field': 'MESSZEIT', 'type': 'Exact'},
-        # {'field': 'MESSZEIT_UNIX_TS', 'type': 'Custom', 'comparator': num_abs_ident },
-        #        {'field' : 'MESSZEIT', 'type': 'String'},
-        #        {'field' : 'MESSZEIT','type': 'DateTime',
-        #         'fuzzy': False, 'dayfirst': False, 'yearfirst': True},
-        {'field': 'KENNUNG', 'type': 'String'},
-        {'field': 'GEOGR_BREITE', 'type': 'Custom', 'comparator': sim_num_abs},
-        {'field': 'GEOGR_LAENGE', 'type': 'Custom', 'comparator': sim_num_abs},
-        # {'field': 'LAT', 'type': 'Custom', 'comparator': sim_num_abs},
-        # {'field': 'LON', 'type': 'Custom', 'comparator': sim_num_abs},
-        # {'field' : 'LAT_LON', 'type': 'LatLong'},
-    ]
+        # ## Active learning
+        # Dedupe will find the next pair of records
+        # it is least certain about and ask you to label them as duplicates
+        # or not.
+        # use 'y', 'n' and 'u' keys to flag duplicates
+        # press 'f' when you are finished
+        print('starting active labeling...')
 
-    # Create a new deduper object and pass our data model to it.
-    deduper = dedupe.Dedupe(fields)
+        dedupe.consoleLabel(deduper)
 
-    # To train dedupe, we feed it a sample of records.
-    deduper.sample(data_d, 15000, .8)
+        # Using the examples we just labeled, train the deduper and learn
+        # blocking predicates
+        deduper.train()
 
-    # If we have training data saved from a previous run of dedupe,
-    # look for it and load it in.
-    # __Note:__ if you want to train from scratch, delete the training_file
-    if os.path.exists(training_file):
-        print('reading labeled examples from ', training_file)
-        with open(training_file, 'rb') as f:
-            deduper.readTraining(f)
+        # When finished, save our training to disk
+        with open(training_file, 'w') as tf:
+            deduper.writeTraining(tf)
 
-    # ## Active learning
-    # Dedupe will find the next pair of records
-    # it is least certain about and ask you to label them as duplicates
-    # or not.
-    # use 'y', 'n' and 'u' keys to flag duplicates
-    # press 'f' when you are finished
-    print('starting active labeling...')
+        # Save our weights and predicates to disk.  If the settings file
+        # exists, we will skip all the training and learning next time we run
+        # this file.
+        with open(settings_file, 'wb') as sf:
+            deduper.writeSettings(sf)
 
-    dedupe.consoleLabel(deduper)
+    threshold = deduper.threshold(df, recall_weight=2.5)
+    print(f'threshold: {threshold}')
 
-    # Using the examples we just labeled, train the deduper and learn
-    # blocking predicates
-    deduper.train()
+    print('clustering...')
+    clustered_dupes = deduper.match(df, .98)
+    # clustered_dupes = deduper.match(data_d, threshold)
 
-    # When finished, save our training to disk
-    with open(training_file, 'w') as tf:
-        deduper.writeTraining(tf)
+    print(f'# duplicate sets {len(clustered_dupes)}')
+    return clustered_dupes
 
-    # Save our weights and predicates to disk.  If the settings file
-    # exists, we will skip all the training and learning next time we run
-    # this file.
-    with open(settings_file, 'wb') as sf:
-        deduper.writeSettings(sf)
 
-threshold = deduper.threshold(data_d, recall_weight=2.5)
-print(f'threshold: {threshold}')
+def write_data(d):
+    # ## Writing Results
 
-print('clustering...')
-clustered_dupes = deduper.match(data_d, .98)
-# clustered_dupes = deduper.match(data_d, threshold)
+    # Write our original data back out to a CSV with a new column called
+    # 'Cluster ID' which indicates which records refer to each other.
 
-print(f'# duplicate sets {len(clustered_dupes)}')
+    cluster_membership = {}
+    cluster_id = 0
+    for (cluster_id, cluster) in enumerate(d):
+        id_set, scores = cluster
+        for record_id, score in zip(id_set, scores):
+            cluster_membership[record_id] = {
+                "cluster id": cluster_id,
+                "confidence": score
+            }
 
-# ## Writing Results
+    singleton_id = cluster_id + 1
 
-# Write our original data back out to a CSV with a new column called 
-# 'Cluster ID' which indicates which records refer to each other.
+    with open(output_file, 'w') as f_output, open(input_file) as f_input:
+        writer = csv.writer(f_output)
+        reader = csv.reader(f_input)
 
-cluster_membership = {}
-cluster_id = 0
-for (cluster_id, cluster) in enumerate(clustered_dupes):
-    id_set, scores = cluster
-    for record_id, score in zip(id_set, scores):
-        cluster_membership[record_id] = {
-            "cluster id": cluster_id,
-            "confidence": score
-        }
+        heading_row = next(reader)
+        heading_row.insert(0, 'confidence_score')
+        heading_row.insert(0, 'Cluster ID')
 
-singleton_id = cluster_id + 1
+        writer.writerow(heading_row)
 
-with open(os.path.join(working_dir, output_file), 'w') as f_output, open(
-        os.path.join(data_dir, input_file + file_ext)) as f_input:
-    writer = csv.writer(f_output)
-    reader = csv.reader(f_input)
+        for row in reader:
+            row_id = int(row[0])
+            if row_id in cluster_membership:
+                cluster_id = cluster_membership[row_id]["cluster id"]
+                row.insert(0, cluster_membership[row_id]['confidence'])
+                row.insert(0, cluster_id)
+            else:
+                row.insert(0, None)
+                row.insert(0, singleton_id)
+                singleton_id += 1
+            writer.writerow(row)
 
-    heading_row = next(reader)
-    heading_row.insert(0, 'confidence_score')
-    heading_row.insert(0, 'Cluster ID')
 
-    writer.writerow(heading_row)
+if __name__ == '__main__':
+    # args
+    args = docopt(__doc__)
+    input_file = args["<filename>"]
 
-    for row in reader:
-        row_id = int(row[0])
-        if row_id in cluster_membership:
-            cluster_id = cluster_membership[row_id]["cluster id"]
-            row.insert(0, cluster_membership[row_id]['confidence'])
-            row.insert(0, cluster_id)
-        else:
-            row.insert(0, None)
-            row.insert(0, singleton_id)
-            singleton_id += 1
-        writer.writerow(row)
-print(f'ran in {time.time() - start_time} seconds')
+    output_file = f'dedupe_out_{Path(input_file).name}'
+
+    working_dir = os.path.abspath(os.path.dirname(__file__))
+    settings_file = os.path.join(working_dir, 'dedupe_dataframe_learned_settings')
+    training_file = os.path.join(working_dir, 'dedupe_dataframe_training.json')
+
+    dat = start_dedupe(read_data(input_file))
+    write_data(dat)
