@@ -142,6 +142,9 @@ def start_dedupe(df):
             {'field': 'KENNUNG', 'type': 'String'},
             {'field': 'GEOGR_BREITE', 'type': 'Custom', 'comparator': sim_num_abs},
             {'field': 'GEOGR_LAENGE', 'type': 'Custom', 'comparator': sim_num_abs},
+            {'field': 'HORIZONTALE_SICHT', 'type': 'ShortString', 'has missing': True},
+            {'field': 'WETTER', 'type': 'Custom', 'comparator': sim_num_abs, 'has missing': True},
+            {'field': 'FAHRTGESCHWINDIGKEIT', 'type': 'Custom', 'comparator': sim_num_abs, 'has missing': True},
             # {'field': 'LAT', 'type': 'Custom', 'comparator': sim_num_abs},
             # {'field': 'LON', 'type': 'Custom', 'comparator': sim_num_abs},
             # {'field' : 'LAT_LON', 'type': 'LatLong'},
@@ -185,12 +188,12 @@ def start_dedupe(df):
         with open(settings_file, 'wb') as sf:
             deduper.writeSettings(sf)
 
-    threshold = deduper.threshold(df, recall_weight=2.5)
+    threshold = deduper.threshold(df, recall_weight=1)
     print(f'threshold: {threshold}')
 
     print('clustering...')
-    clustered_dupes = deduper.match(df, .98)
-    # clustered_dupes = deduper.match(data_d, threshold)
+    # clustered_dupes = deduper.match(df, .98)
+    clustered_dupes = deduper.match(df, threshold)
 
     print(f'# duplicate sets {len(clustered_dupes)}')
     return clustered_dupes
