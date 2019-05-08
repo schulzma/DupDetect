@@ -74,9 +74,6 @@ python csv_example_recordlinkage_SN.py
 ### pandas-dedupe
 * Repository: [https://github.com/Lyonk71/pandas-dedupe.git](https://github.com/Lyonk71/pandas-dedupe.git)
 
-### csvdedupe
-* Repository: [https://github.com/dedupeio/csvdedupe.git](https://github.com/dedupeio/csvdedupe.git)
-
 ### Python Record Linkage Toolkit
 * Dokumentation: [https://recordlinkage.readthedocs.io/en/latest/#](https://recordlinkage.readthedocs.io/en/latest/#)
 * Repository: [https://github.com/J535D165/recordlinkage.git](https://github.com/J535D165/recordlinkage.git)
