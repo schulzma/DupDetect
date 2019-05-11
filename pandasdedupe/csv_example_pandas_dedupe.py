@@ -49,6 +49,7 @@ def read_file(f):
     try:
         # load dataframe
         df = pd.read_csv(f, index_col='MAROB_ID')
+        df['LAT_LON'] = df.apply(lambda row: [row['GEOGR_BREITE'], row['GEOGR_LAENGE']], axis=1)
         return df
     except FileNotFoundError:
         print(f"{f} nicht gefunden!")
@@ -62,8 +63,12 @@ def start_p_dedupe(df):
     :return: DataFrame mit dem Ergebnis
     """
     # initiate deduplication
-    # df_final = pandas_dedupe.dedupe_dataframe(df, ['MESSZEIT', ('KENNUNG', 'Text'), 'LAT', 'LON'], canonicalize=True)
-    df_final = pandas_dedupe.dedupe_dataframe(df, ['MESSZEIT', ('KENNUNG', 'Text'), 'GEOGR_BREITE', 'GEOGR_LAENGE'])
+    fields = [('MESSZEIT', 'Exact'), ('KENNUNG', 'Exact'),
+              # ('GEOGR_BREITE', 'String'), ('GEOGR_LAENGE', 'String'),
+              ('LAT_LON', 'LatLong'),
+              ('HORIZONTALE_SICHT', 'ShortString', 'has missing'),
+              ('WETTER', 'ShortString', 'has missing')]
+    df_final = pandas_dedupe.dedupe_dataframe(df, fields)
     return df_final
 
 

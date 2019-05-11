@@ -84,6 +84,16 @@ def num_abs_ident(field_1, field_2):
         pass
 
 
+def sim_ww(field_1, field_2):
+    try:
+        if ((field_1 is None) and (field_2 in ['509', '510'])) or ((field_2 is None) and (field_1 in ['509', '510'])):
+            return 1
+        else:
+            return sim_num_perc(field_1, field_2)
+    except:
+        pass
+
+
 def pre_process(column):
     """
     Do a little bit of data cleaning with the help of Unidecode and Regex.
@@ -135,19 +145,11 @@ def start_dedupe(df):
         # Define the fields dedupe will pay attention to
         fields = [
             {'field': 'MESSZEIT', 'type': 'Exact'},
-            # {'field': 'MESSZEIT_UNIX_TS', 'type': 'Custom', 'comparator': num_abs_ident },
-            #        {'field' : 'MESSZEIT', 'type': 'String'},
-            #        {'field' : 'MESSZEIT','type': 'DateTime',
-            #         'fuzzy': False, 'dayfirst': False, 'yearfirst': True},
-            {'field': 'KENNUNG', 'type': 'String'},
+            {'field': 'KENNUNG', 'type': 'Exact'},
             {'field': 'GEOGR_BREITE', 'type': 'Custom', 'comparator': sim_num_abs},
             {'field': 'GEOGR_LAENGE', 'type': 'Custom', 'comparator': sim_num_abs},
             {'field': 'HORIZONTALE_SICHT', 'type': 'ShortString', 'has missing': True},
-            {'field': 'WETTER', 'type': 'Custom', 'comparator': sim_num_abs, 'has missing': True},
-            {'field': 'FAHRTGESCHWINDIGKEIT', 'type': 'Custom', 'comparator': sim_num_abs, 'has missing': True},
-            # {'field': 'LAT', 'type': 'Custom', 'comparator': sim_num_abs},
-            # {'field': 'LON', 'type': 'Custom', 'comparator': sim_num_abs},
-            # {'field' : 'LAT_LON', 'type': 'LatLong'},
+            {'field': 'WETTER', 'type': 'Custom', 'comparator': sim_ww, 'has missing': True},
         ]
 
         # Create a new deduper object and pass our data model to it.

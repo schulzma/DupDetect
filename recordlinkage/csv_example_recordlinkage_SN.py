@@ -20,14 +20,15 @@ Options:
 
 """
 import time
+import recordlinkage as rl
 from functools import wraps
 from pathlib import Path
 from docopt import docopt
-
-import recordlinkage as rl
+from recordlinkage.base import BaseCompareFeature
 import pandas as pd
 
 import warnings
+
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
@@ -55,6 +56,34 @@ def read_file(f):
         print(f"{f} nicht gefunden!")
 
 
+def sim_num_abs(field_1, field_2, dmax=.11):
+    """
+    Numerische Aehnlichkeit mit absoluter Differenz als Toleranz
+    :param field_1: Parameter 1
+    :param field_2: Parameter 2
+    :param dmax: maximale absolute Differenz, default: 0.11
+    :return: Aehnlichkeit (zwischen 0 fuer keine und 1 fuer komplette Identitaet)
+    """
+    try:
+        f1 = pd.to_numeric(field_1)
+        f2 = pd.to_numeric(field_2)
+        d = abs(f1 - f2)
+        sim = 1.0 - (d / dmax) if d < dmax else 0.0
+        return sim.astype(float)
+    except ValueError:
+        pass
+
+
+class CompareWetter(BaseCompareFeature):
+
+    def _compute_vectorized(self, s1, s2):
+        """
+        Wetter vergleichen, wenn 509 oder 510 dann auch 1.0 zurückgeben
+        """
+        sim = (s1 == s2) | (s1 == 509.0) | (s2 == 509.0) | (s1 == 510.0) | (s2 == 510.0) | s1.empty | s2.empty
+        return sim.astype(float)
+
+
 @fn_timer
 def start_rl(df):
     """
@@ -72,11 +101,14 @@ def start_rl(df):
     # Comparison step
     comparer = rl.Compare()
     comparer.exact('MESSZEIT', 'MESSZEIT', label='messzeit')
-    comparer.string('KENNUNG', 'KENNUNG', method='jarowinkler', threshold=0.85, label='kennung')
-    comparer.numeric('GEOGR_BREITE', 'GEOGR_BREITE', method=u'lin', offset=0.0, origin=0.0, scale=1.0,
-                     label='geogr_breite')
-    comparer.numeric('GEOGR_LAENGE', 'GEOGR_LAENGE', method=u'lin', offset=0.0, origin=0.0, scale=1.0,
-                     label='geogr_laenge')
+    comparer.exact('KENNUNG', 'KENNUNG', label='kennung')
+    comparer.numeric('GEOGR_BREITE', 'GEOGR_BREITE', method=u'lin', offset=0.0, label='geogr_breite')
+    comparer.numeric('GEOGR_LAENGE', 'GEOGR_LAENGE', method=u'lin', offset=0.0, label='geogr_laenge')
+    # comparer.geo('GEOGR_BREITE', 'GEOGR_LAENGE', 'GEOGR_BREITE', 'GEOGR_LAENGE', method=u'lin', offset=0.0,
+    #             origin=0.0, scale=1.0, label='koord')
+    comparer.numeric('HORIZONTALE_SICHT', 'HORIZONTALE_SICHT', method=u'lin', offset=10.0, missing_value=1,
+                     label='horizontale_sicht')
+    comparer.add(CompareWetter('WETTER', 'WETTER', label='wetter2'))
 
     compared = comparer.compute(pairs, df)
 
