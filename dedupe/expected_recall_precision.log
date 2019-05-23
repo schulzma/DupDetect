@@ -1,0 +1,88 @@
+INFO:dedupe.api:((SimplePredicate: (wholeFieldPredicate, KENNUNG), SimplePredicate: (wholeFieldPredicate, MESSZEIT)),)
+INFO:dedupe.api:Maximum expected recall and precision
+INFO:dedupe.api:recall: 1.000
+INFO:dedupe.api:precision: 0.993
+INFO:dedupe.api:With threshold: 0.720
+INFO:dedupe.api:((SimplePredicate: (wholeFieldPredicate, KENNUNG), SimplePredicate: (wholeFieldPredicate, MESSZEIT)),)
+INFO:dedupe.api:Maximum expected recall and precision
+INFO:dedupe.api:recall: 0.996
+INFO:dedupe.api:precision: 0.990
+INFO:dedupe.api:With threshold: 0.557
+INFO:dedupe.api:((SimplePredicate: (wholeFieldPredicate, KENNUNG), SimplePredicate: (wholeFieldPredicate, MESSZEIT)),)
+INFO:dedupe.api:Maximum expected recall and precision
+INFO:dedupe.api:recall: 0.997
+INFO:dedupe.api:precision: 0.987
+INFO:dedupe.api:With threshold: 0.557
+INFO:dedupe.api:((SimplePredicate: (wholeFieldPredicate, KENNUNG), SimplePredicate: (wholeFieldPredicate, MESSZEIT)),)
+INFO:dedupe.blocking:10000, 0.0554062 seconds
+INFO:dedupe.api:Maximum expected recall and precision
+INFO:dedupe.api:recall: 0.997
+INFO:dedupe.api:precision: 0.991
+INFO:dedupe.api:With threshold: 0.557
+INFO:dedupe.blocking:10000, 0.0511252 seconds
+INFO:dedupe.api:((SimplePredicate: (wholeFieldPredicate, KENNUNG), SimplePredicate: (wholeFieldPredicate, MESSZEIT)),)
+INFO:dedupe.blocking:10000, 0.0456972 seconds
+INFO:dedupe.blocking:20000, 0.0914212 seconds
+INFO:dedupe.api:Maximum expected recall and precision
+INFO:dedupe.api:recall: 0.997
+INFO:dedupe.api:precision: 0.991
+INFO:dedupe.api:With threshold: 0.557
+INFO:dedupe.blocking:10000, 0.0504852 seconds
+INFO:dedupe.blocking:20000, 0.0939972 seconds
+INFO:dedupe.api:((SimplePredicate: (wholeFieldPredicate, KENNUNG), SimplePredicate: (wholeFieldPredicate, MESSZEIT)),)
+INFO:dedupe.blocking:10000, 0.0454242 seconds
+INFO:dedupe.blocking:20000, 0.0905462 seconds
+INFO:dedupe.blocking:30000, 0.1382522 seconds
+INFO:dedupe.api:Maximum expected recall and precision
+INFO:dedupe.api:recall: 0.997
+INFO:dedupe.api:precision: 0.991
+INFO:dedupe.api:With threshold: 0.526
+INFO:dedupe.blocking:10000, 0.0425992 seconds
+INFO:dedupe.blocking:20000, 0.0858582 seconds
+INFO:dedupe.blocking:30000, 0.1320582 seconds
+INFO:dedupe.api:((SimplePredicate: (wholeFieldPredicate, KENNUNG), SimplePredicate: (wholeFieldPredicate, MESSZEIT)),)
+INFO:dedupe.blocking:10000, 0.0461662 seconds
+INFO:dedupe.blocking:20000, 0.0936342 seconds
+INFO:dedupe.blocking:30000, 0.1419642 seconds
+INFO:dedupe.blocking:40000, 0.1895432 seconds
+INFO:dedupe.api:Maximum expected recall and precision
+INFO:dedupe.api:recall: 0.996
+INFO:dedupe.api:precision: 0.991
+INFO:dedupe.api:With threshold: 0.526
+INFO:dedupe.blocking:10000, 0.0445602 seconds
+INFO:dedupe.blocking:20000, 0.0999592 seconds
+INFO:dedupe.blocking:30000, 0.1464912 seconds
+INFO:dedupe.blocking:40000, 0.1936322 seconds
+INFO:dedupe.api:((SimplePredicate: (wholeFieldPredicate, KENNUNG), SimplePredicate: (wholeFieldPredicate, MESSZEIT)),)
+INFO:dedupe.blocking:10000, 0.0481272 seconds
+INFO:dedupe.blocking:20000, 0.0973482 seconds
+INFO:dedupe.blocking:30000, 0.1476572 seconds
+INFO:dedupe.blocking:40000, 0.2152682 seconds
+INFO:dedupe.blocking:50000, 0.2681432 seconds
+INFO:dedupe.api:Maximum expected recall and precision
+INFO:dedupe.api:recall: 0.996
+INFO:dedupe.api:precision: 0.992
+INFO:dedupe.api:With threshold: 0.526
+INFO:dedupe.blocking:10000, 0.0494842 seconds
+INFO:dedupe.blocking:20000, 0.1153972 seconds
+INFO:dedupe.blocking:30000, 0.1663582 seconds
+INFO:dedupe.blocking:40000, 0.2164732 seconds
+INFO:dedupe.blocking:50000, 0.2708282 seconds
+INFO:dedupe.api:((SimplePredicate: (wholeFieldPredicate, KENNUNG), SimplePredicate: (wholeFieldPredicate, MESSZEIT)),)
+INFO:dedupe.blocking:10000, 0.0465792 seconds
+INFO:dedupe.blocking:20000, 0.0941152 seconds
+INFO:dedupe.blocking:30000, 0.1425592 seconds
+INFO:dedupe.blocking:40000, 0.2012002 seconds
+INFO:dedupe.blocking:50000, 0.2516452 seconds
+INFO:dedupe.blocking:60000, 0.3005812 seconds
+INFO:dedupe.api:Maximum expected recall and precision
+INFO:dedupe.api:recall: 0.996
+INFO:dedupe.api:precision: 0.992
+INFO:dedupe.api:With threshold: 0.526
+INFO:dedupe.blocking:10000, 0.0440762 seconds
+INFO:dedupe.blocking:20000, 0.0919042 seconds
+INFO:dedupe.blocking:30000, 0.1555612 seconds
+INFO:dedupe.blocking:40000, 0.2046752 seconds
+INFO:dedupe.blocking:50000, 0.2550932 seconds
+INFO:dedupe.blocking:60000, 0.3023782 seconds
+

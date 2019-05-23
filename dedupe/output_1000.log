@@ -1,0 +1,6 @@
+importing data ...
+reading from /home/sfarchiv/GitRepositories/DupDetect/dedupe/dedupe_dataframe_learned_settings
+threshold: 0.7197775840759277
+clustering...
+# duplicate sets 239
+Total time running start_dedupe: 0.15854620933532715 seconds

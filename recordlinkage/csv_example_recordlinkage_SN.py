@@ -76,7 +76,7 @@ def start_rl(df):
 
     # Indexation step
     indexer = rl.index.SortedNeighbourhood(
-        'MESSZEIT', window=3, block_on=['KENNUNG']
+        'MESSZEIT', window=5, block_on=['KENNUNG']
     )
     pairs = indexer.index(df)
 
@@ -84,8 +84,8 @@ def start_rl(df):
     comparer = rl.Compare()
     comparer.exact('MESSZEIT', 'MESSZEIT', label='messzeit')
     comparer.exact('KENNUNG', 'KENNUNG', label='kennung')
-    comparer.numeric('GEOGR_BREITE', 'GEOGR_BREITE', method=u'lin', offset=0.0, label='geogr_breite')
-    comparer.numeric('GEOGR_LAENGE', 'GEOGR_LAENGE', method=u'lin', offset=0.0, label='geogr_laenge')
+    comparer.numeric('GEOGR_BREITE', 'GEOGR_BREITE', method=u'gauss', offset=0.0, label='geogr_breite')
+    comparer.numeric('GEOGR_LAENGE', 'GEOGR_LAENGE', method=u'gauss', offset=0.0, label='geogr_laenge')
     comparer.numeric('HORIZONTALE_SICHT', 'HORIZONTALE_SICHT', method=u'lin', offset=10.0, missing_value=1,
                      label='horizontale_sicht')
     comparer.add(CompareWetter('WETTER', 'WETTER', label='wetter2'))
@@ -97,7 +97,7 @@ def start_rl(df):
     compared.loc[:, 'Score'] = 1 - (abs(compared.sum(axis=1) - pcmax) / pcmax)
 
     # Classification step
-    matches = compared[(compared.messzeit == 1) & (compared.kennung == 1) & (compared.Score >= .99)]
+    matches = compared[(compared.messzeit == 1) & (compared.kennung == 1) & (compared.Score >= .991)]
 
     return compared, matches
 
