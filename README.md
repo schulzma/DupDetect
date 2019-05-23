@@ -49,19 +49,19 @@ pip install --upgrade -r requirements.txt
 dedupe:
 ```
 cd dedupe
-python csv_example_dedupe.py
+python csv_example_dedupe.py ../data/exp_1000.csv
 ```
 
 pandas_dedupe:
 ```
 cd ../pandasdedupe/
-python csv_example_pandas_dedupe.py
+python csv_example_pandas_dedupe.py ../data/exp_1000.csv
 ```
 
 recordlinkage:
 ```
 cd ../recordlinkage/
-python csv_example_recordlinkage_SN.py
+python csv_example_recordlinkage_SN.py ../data/exp_1000.csv
 ```
 
 ## Eingesetzte Bibliotheken
